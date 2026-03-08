@@ -1,3 +1,4 @@
+import io
 import marshal
 import gzip
 import dis
@@ -23,8 +24,14 @@ try:
     print("[+] Berhasil mengekstrak bytecode ke 'hasil_decompile.pyc'")
     print("[+] Menampilkan instruksi disassembly:\n")
     
-    # 4. Menampilkan instruksi dari kode asli ke terminal
-    dis.dis(code_obj)
+    # 4. Menampilkan instruksi dari kode asli ke terminal dan simpan ke file
+    buffer = io.StringIO()
+    dis.dis(code_obj, file=buffer)
+    disassembly_output = buffer.getvalue()
+    print(disassembly_output)
+    with open('hasil_disassembly.txt', 'w') as f:
+        f.write(disassembly_output)
+    print("[+] Hasil disassembly disimpan ke 'hasil_disassembly.txt'")
 
 except KeyboardInterrupt:
     exit()

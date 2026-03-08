@@ -9,7 +9,7 @@ jobs:
   run:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -17,8 +17,15 @@ jobs:
           python-version: '3.x'
       - name: Run extrak.py
         run: python extrak.py
-      - name: Upload hasil_decompile.pyc
-        uses: actions/upload-artifact@v4
-        with:
-          name: hasil_decompile
-          path: hasil_decompile.pyc
+      - name: Commit hasil ke repo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -f hasil_decompile.pyc ] && [ -f hasil_disassembly.txt ]; then
+            git add hasil_decompile.pyc hasil_disassembly.txt
+            git diff --cached --quiet || git commit -m "chore: simpan hasil ekstraksi [skip ci]"
+            git push
+          else
+            echo "[-] File output tidak ditemukan, tidak ada yang di-commit"
+            exit 1
+          fi
