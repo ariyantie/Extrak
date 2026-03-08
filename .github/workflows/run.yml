@@ -23,6 +23,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           if [ -f hasil_decompile.pyc ] && [ -f hasil_disassembly.txt ]; then
             git add hasil_decompile.pyc hasil_disassembly.txt
+            [ -f hasil_decompile_call.py ] && git add hasil_decompile_call.py
             git diff --cached --quiet || git commit -m "chore: simpan hasil ekstraksi [skip ci]"
             git push
           else

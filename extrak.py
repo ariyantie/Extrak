@@ -1,4 +1,5 @@
 import io
+import base64
 import marshal
 import gzip
 import dis
@@ -37,3 +38,27 @@ except KeyboardInterrupt:
     exit()
 except Exception as e:
     print(f"[-] Gagal mengekstrak: {e}")
+
+# Decompile call.py (base64-encoded layer)
+try:
+    with open('call.py', 'r') as f:
+        call_content = f.read()
+    start_marker = "b64decode('"
+    idx = call_content.find(start_marker)
+    if idx != -1:
+        start = idx + len(start_marker)
+        end = call_content.find("')", start)
+        b64_str = call_content[start:end].strip() if end != -1 else call_content[start:].strip()
+        # Add padding if needed
+        padding = '=' * ((4 - len(b64_str) % 4) % 4)
+        decoded_bytes = base64.b64decode(b64_str + padding)
+        decoded_text = decoded_bytes.decode('utf-8', errors='replace')
+        with open('hasil_decompile_call.py', 'w', encoding='utf-8') as f:
+            f.write(decoded_text)
+        print("[+] Berhasil mendekode call.py ke 'hasil_decompile_call.py'")
+    else:
+        print("[-] Tidak menemukan pola base64 di call.py")
+except KeyboardInterrupt:
+    exit()
+except Exception as e:
+    print(f"[-] Gagal mendekode call.py: {e}")
